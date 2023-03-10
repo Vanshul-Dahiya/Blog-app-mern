@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, TextField, Button, styled, Typography } from "@mui/material";
-
+import { API } from "../../service/api";
 const Component = styled(Box)`
   width: 400px;
   margin: auto;
@@ -41,7 +41,13 @@ const SignUpButton = styled(Button)`
   border-radius: 2px;
   box-shadow: 0 2px 4px 0 rgb(0 0 0/20%);
 `;
-
+const Error = styled(Typography)`
+  font-size: 10px;
+  color: #ff6161;
+  line-height: 10px;
+  margin-top: 10px;
+  font-weight: 600;
+`;
 const Text = styled(Typography)`
   color: #878787;
   font-size: 15px;
@@ -60,17 +66,38 @@ const Login = () => {
 
   const [account, toggleAccount] = useState("login");
   const [signup, setSignup] = useState(signupInitialValues);
+  const [error, setError] = useState("");
 
   //   change state
   const toggleSignUp = () => {
     account === "signup" ? toggleAccount("login") : toggleAccount("signup");
   };
 
-  //   name field is used to differentiate between each
-  //   store signup values
+  //   name field is used to differentiate between each textfield
   const onInputChange = (e) => {
     // e.target.name will act as key
+    // store signup values
     setSignup({ ...signup, [e.target.name]: e.target.value });
+  };
+
+  // call api
+  const signupUser = async () => {
+    const response = await API.userSignup(signup);
+    console.log("got response");
+    console.log(response.isSuccess);
+    // if sign up is successful , empty the fields
+    if (response) {
+      console.log("after if");
+      setError("");
+      console.log("after setError");
+      setSignup(signupInitialValues);
+      console.log("after setSignup");
+
+      toggleAccount("login");
+      console.log("after toggle");
+    } else {
+      setError("Something went wrong! Please try again later");
+    }
   };
   return (
     <Component>
@@ -80,6 +107,9 @@ const Login = () => {
           <Wrapper>
             <TextField variant="standard" label="Enter Username" />
             <TextField variant="standard" label="Enter password" />
+
+            {error && <Error> {error} </Error>}
+
             <LoginButton variant="contained">Login</LoginButton>
             <Text style={{ textAlign: "center" }}>OR</Text>
             <SignUpButton onClick={() => toggleSignUp()}>
@@ -106,7 +136,8 @@ const Login = () => {
               name="password"
               label="Enter password"
             />
-            <SignUpButton>Sign Up</SignUpButton>
+            {error && <Error> {error} </Error>}
+            <SignUpButton onClick={() => signupUser()}>Sign Up</SignUpButton>
             <Text style={{ textAlign: "center" }}>OR</Text>
             <LoginButton variant="contained" onClick={() => toggleSignUp()}>
               Already have an account
@@ -117,4 +148,5 @@ const Login = () => {
     </Component>
   );
 };
+
 export default Login;
