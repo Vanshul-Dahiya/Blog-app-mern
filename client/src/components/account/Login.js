@@ -82,11 +82,17 @@ const Login = () => {
 
   // call api
   const signupUser = async () => {
-    await API.userSignup(signup);
 
-    setError("");
-    setSignup(signupInitialValues);
-    toggleAccount("login");
+    if(signup.name==''||signup.username==''||signup.password==''){
+      alert('fill the form first')
+    }else{
+      await API.userSignup(signup);
+
+      setError("");
+      setSignup(signupInitialValues);
+      toggleAccount("login");
+    }
+    
   };
   return (
     <Component>

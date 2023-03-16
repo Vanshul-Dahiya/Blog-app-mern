@@ -15,6 +15,10 @@ export const signupUser = async (req, res) => {
       password: hashedPassword,
     };
 
+    if (!user.username || !user.name || !user.password) {
+      return res.status(400).json({ message:'invalid parameter' });
+    }
+
     // newUser is a validated object
     const newUser = new User(user);
 
