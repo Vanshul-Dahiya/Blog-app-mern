@@ -82,22 +82,11 @@ const Login = () => {
 
   // call api
   const signupUser = async () => {
-    const response = await API.userSignup(signup);
-    console.log("got response");
-    console.log(response.isSuccess);
-    // if sign up is successful , empty the fields
-    if (response) {
-      console.log("after if");
-      setError("");
-      console.log("after setError");
-      setSignup(signupInitialValues);
-      console.log("after setSignup");
+    await API.userSignup(signup);
 
-      toggleAccount("login");
-      console.log("after toggle");
-    } else {
-      setError("Something went wrong! Please try again later");
-    }
+    setError("");
+    setSignup(signupInitialValues);
+    toggleAccount("login");
   };
   return (
     <Component>
