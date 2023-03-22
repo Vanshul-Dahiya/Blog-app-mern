@@ -25,8 +25,13 @@ export const API_NOTIFICATION_MESSAGES = {
 };
 
 // api service call
-// sample request 
+// sample request
 // need service call: {url:'/',method:'post/get/put/delete',params:true/false,query:true/false}
 export const SERVICE_URLS = {
   userSignup: { url: "/signup", method: "POST" },
+  userLogin: {
+    url: "/login",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  },
 };

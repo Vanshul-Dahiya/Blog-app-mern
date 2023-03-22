@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Box, TextField, Button, styled, Typography } from "@mui/material";
 import { API } from "../../service/api";
+import { DataContext } from "../../context/DataProvider";
+
 const Component = styled(Box)`
   width: 400px;
   margin: auto;
@@ -53,6 +55,11 @@ const Text = styled(Typography)`
   font-size: 15px;
 `;
 
+const loginInitialValues = {
+  username: "",
+  password: "",
+};
+
 // store signUp values
 const signupInitialValues = {
   name: "",
@@ -66,7 +73,10 @@ const Login = () => {
 
   const [account, toggleAccount] = useState("login");
   const [signup, setSignup] = useState(signupInitialValues);
+  const [login, setLogin] = useState(loginInitialValues);
   const [error, setError] = useState("");
+
+  const { setAccount } = useContext(DataContext);
 
   //   change state
   const toggleSignUp = () => {
@@ -82,30 +92,76 @@ const Login = () => {
 
   // call api
   const signupUser = async () => {
-
-    if(signup.name==''||signup.username==''||signup.password==''){
-      alert('fill the form first')
-    }else{
+    if (
+      signup.name === "" ||
+      signup.username === "" ||
+      signup.password === ""
+    ) {
+      alert("fill the form first");
+    } else {
       await API.userSignup(signup);
 
       setError("");
       setSignup(signupInitialValues);
       toggleAccount("login");
     }
-    
   };
+
+  const onValueChange = (e) => {
+    // get login values
+    setLogin({ ...login, [e.target.name]: e.target.value });
+  };
+
+  const loginUser = async () => {
+    if (login.username === "" || login.password === "") {
+      alert("fill the form first");
+    } else {
+      let response = await API.userLogin(login);
+      console.log(response);
+
+      setError("");
+      sessionStorage.setItem(
+        "accessToken",
+        `Bearer ${response.data.accessToken}`
+      );
+      sessionStorage.setItem(
+        "refreshToken",
+        `Bearer ${response.data.refreshToken}`
+      );
+
+      setAccount({
+        username: response.data.username,
+        name: response.data.name,
+      });
+    }
+  };
+
   return (
     <Component>
       <Box>
         <Image src={imageURL} alt="login" />
         {account === "login" ? (
           <Wrapper>
-            <TextField variant="standard" label="Enter Username" />
-            <TextField variant="standard" label="Enter password" />
+            <TextField
+              variant="standard"
+              value={login.username}
+              onChange={(e) => onValueChange(e)}
+              name="username"
+              label="Enter Username"
+            />
+            <TextField
+              variant="standard"
+              value={login.password}
+              onChange={(e) => onValueChange(e)}
+              name="password"
+              label="Enter password"
+            />
 
             {error && <Error> {error} </Error>}
 
-            <LoginButton variant="contained">Login</LoginButton>
+            <LoginButton variant="contained" onClick={() => loginUser()}>
+              Login
+            </LoginButton>
             <Text style={{ textAlign: "center" }}>OR</Text>
             <SignUpButton onClick={() => toggleSignUp()}>
               Create an account
